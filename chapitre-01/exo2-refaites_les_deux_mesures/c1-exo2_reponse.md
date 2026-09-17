@@ -1,4 +1,4 @@
-# ANI-4067 — Chapitre 01 : Exercice 2
+# ANI-4077 — Chapitre 01 : Exercice 2
 
 > **Énoncé**  
 > Le chapitre donne deux tableaux de nombres : la taille des six backends du moteur, et le coût d'un triangle par API.
