@@ -1,4 +1,4 @@
-# ANI-4067 — Chapitre 01 : Exercice 3
+# ANI-4077 — Chapitre 01 : Exercice 3
 
 > **Énoncé**  
 
@@ -26,7 +26,7 @@
 **Commande executée :**
 
 ```cmd
-wmin path win32_videocontroller get mane
+wmic path win32_videocontroller get name
 ```
 **Resultat :**
 ```text
