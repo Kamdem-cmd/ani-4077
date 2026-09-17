@@ -43,7 +43,7 @@ GPU-Z
 ```
 **Resultat :**
 ```text
-Platform Version	OpenCL 3.0 
+Platform Version	OpenGL 3.0 
 ```
 
 ## 3. Version d'OpenGL pour mon pilote
