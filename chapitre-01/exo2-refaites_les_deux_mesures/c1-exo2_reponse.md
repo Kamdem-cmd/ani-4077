@@ -47,5 +47,12 @@ Ces seconds resultats proviennent probablement des Organisme detentrice d'entrep
 ```
 **-> Methodologie:**
 ```text
+Si je devais vérifier ces chiffres, j'appliquerais le protocole suivant : 
+- Scène de référence : Rendu d'un unique triangle sans texture ni illumination complexe sur tous les backends.
 
+- Mesure GPU : Utilisation de requêtes d'horloge GPU (Timestamp Queries) pour isoler le temps d'exécution matériel du temps processeur (CPU).
+
+- Profilage : Analyser la durée exacte du Draw Call.
+
+- Moyennage : Exécution du test sur une longue séquence de frames afin d'obtenir un temps moyen lissé en nanosecondes.
  ```
