@@ -343,3 +343,9 @@ Time:           0.02s
 Status:         ✓ SUCCESS
 ════════════════════════════════════════════════════════════════════════════════
 ```
+
+## QUI PARLE NORMALEMENT ?
+
+* **includedirs manquant :** c'est le `compilateur` qui parle.
+* **libdirs manquant :** c'est le `lieur` qui parle.
+* **links manquant :** c'est le `lieur` qui parle.
