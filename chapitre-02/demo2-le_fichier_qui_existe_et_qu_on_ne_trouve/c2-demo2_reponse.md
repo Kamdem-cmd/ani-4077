@@ -119,3 +119,7 @@ Status:         ✗ FAILURE
 Echecs (1) — a corriger :
   ✗ Essai
 ```
+
+## Presence du fichier dans l'explorateur.
+
+![lib MonRhi visible](Capture.PNG)
