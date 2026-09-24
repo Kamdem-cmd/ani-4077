@@ -26,3 +26,7 @@ void FonctionInutile() {
 | :--- | :--- | :---: | :---: | :---: |
 | **MonRhi.lib** | `Build/Lib/Debug-Windows/` | 15 Ko | 29 Ko | +14 Ko (Augmentation) |
 | **Essai.exe** | `Build/Bin/Debug-Windows/Essai/` | 154 Ko | 154 Ko | 0 Ko (Aucun changement) |
+
+## Conclusion
+
+**Un fichier en plus même inutile impacte sur la taille finale d'un lib.**
