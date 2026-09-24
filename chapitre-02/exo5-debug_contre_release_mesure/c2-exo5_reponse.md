@@ -95,4 +95,4 @@ Somme calculee : 5000000050000000
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-**Bilan :** le mode `Release`est plus rapide que le mode `Debug`.
+**Bilan :** le mode `Release`est plus rapide `1,8` fois que le mode `Debug`.
