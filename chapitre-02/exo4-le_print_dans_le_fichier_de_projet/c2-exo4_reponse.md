@@ -110,3 +110,9 @@ Daemon
 ------------------------------------------------------------
 Status: Not running
 ```
+
+## Constat
+
+**le message apparaît juste après la bannière, avant l'en-tête du projet, parce que le fichier est exécuté avant que l'outil n'affiche quoi que ce soit**
+
+****
