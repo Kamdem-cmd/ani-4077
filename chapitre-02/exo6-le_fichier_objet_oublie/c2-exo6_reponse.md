@@ -24,5 +24,5 @@ void FonctionInutile() {
 
 | Fichier Cible | Emplacement dans le Build | Taille AVANT | Taille APRÈS | Variation |
 | :--- | :--- | :---: | :---: | :---: |
-| **MonRhi.lib** | `Build/Lib/Debug-Windows/` | ~15 Ko | ~29 Ko | +14 Ko (↑ Augmentation) |
-| **Essai.exe** | `Build/Bin/Debug-Windows/Essai/` | ~154 Ko | ~154 Ko | 0 Ko (→ Aucun changement) |
+| **MonRhi.lib** | `Build/Lib/Debug-Windows/` | 15 Ko | 29 Ko | +14 Ko (Augmentation) |
+| **Essai.exe** | `Build/Bin/Debug-Windows/Essai/` | 154 Ko | 154 Ko | 0 Ko (Aucun changement) |

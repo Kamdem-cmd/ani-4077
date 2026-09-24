@@ -3,7 +3,18 @@ from Jenga import *
 with workspace("MonRhiWks", location="."):
     configurations(["Debug", "Release"])
 
-    # La bibliotheque : du code compile, sans main.
+    # 1. Bibliothèque utilitaire de bas niveau
+    with project("MonUtil"):
+        staticlib()
+        language("C++")
+        cppdialect("C++17")
+        location(".")
+        files(["src/MonUtil/**.cpp"])
+        includedirs(["src"])
+        objdir("%{wks.location}/Build/Obj/%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
+        targetdir("%{wks.location}/Build/Lib/%{cfg.buildcfg}-%{cfg.system}")
+
+    # 2. Bibliothèque RHI (dépend de MonUtil)
     with project("MonRhi"):
         staticlib()
         language("C++")
@@ -11,12 +22,11 @@ with workspace("MonRhiWks", location="."):
         location(".")
         files(["src/MonRhi/**.cpp"])
         includedirs(["src"])
-        objdir("%{wks.location}/Build/Obj/"
-                "%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
-        targetdir("%{wks.location}/Build/Lib/"
-                    "%{cfg.buildcfg}-%{cfg.system}")
+        links(["MonUtil"])
+        objdir("%{wks.location}/Build/Obj/%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
+        targetdir("%{wks.location}/Build/Lib/%{cfg.buildcfg}-%{cfg.system}")
 
-    # Le programme qui s'en sert.
+    # 3. Application cliente
     with project("Essai"):
         consoleapp()
         language("C++")
@@ -24,10 +34,7 @@ with workspace("MonRhiWks", location="."):
         location(".")
         files(["src/Essai/**.cpp"])
         includedirs(["src"])
-        libdirs(["%{wks.location}/Build/Lib/"
-                    "%{cfg.buildcfg}-%{cfg.system}"])
-        links(["MonRhi"])
-        objdir("%{wks.location}/Build/Obj/"
-                "%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
-        targetdir("%{wks.location}/Build/Bin/"
-                    "%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
+        libdirs(["%{wks.location}/Build/Lib/%{cfg.buildcfg}-%{cfg.system}"])
+        links(["MonRhi", "MonUtil"])  # Dépendances de liens
+        objdir("%{wks.location}/Build/Obj/%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
+        targetdir("%{wks.location}/Build/Bin/%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
