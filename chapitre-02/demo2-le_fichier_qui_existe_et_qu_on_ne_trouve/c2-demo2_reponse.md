@@ -63,7 +63,7 @@ with workspace("MonRhiWks", location="."):
 
 Loading workspace...
 
-Configuration: Debug
+Configuration: release
 Target:        Windows x86_64
 Toolchain:     clang-mingw
 
@@ -76,13 +76,14 @@ Build Order (2 projects):
 ║  Project: MonRhi                                                           Kind: STATIC_LIB  ║
 ╚══════════════════════════════════════════════════════════════════════════════════════════════╝
 
-ℹ Found 1 source file(s)
-✓   [1/1] Compiled: MonRhi.cpp
+ℹ Found 2 source file(s)
+✓   [1/2] Compiled: MonRhi.cpp
+✓   [2/2] Compiled: Inutile.cpp
 ℹ Linking...
-✓ Built: Build\Lib\Debug-Windows\MonRhi.lib
+✓ Built: Build\Lib\release-Windows\MonRhi.lib
 
 ┌──────────────────────────────────────────────────────────────────────────────────────────────┐
-│  ✓ Build Successful                                                             Time: 0.78s  │
+│  ✓ Build Successful                                                             Time: 0.88s  │
 └──────────────────────────────────────────────────────────────────────────────────────────────┘
 
 ╔══════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -98,10 +99,10 @@ Build Order (2 projects):
 ║ C:/msys64/ucrt64/bin/ld: cannot find -lMonRhi: No such file or directory                     ║
 ║ clang++: error: linker command failed with exit code 1 (use -v to see invocation)            ║
 ╚══════════════════════════════════════════════════════════════════════════════════════════════╝
-✗ Link failed: Build\Bin\Debug-Windows\Essai\Essai.exe
+✗ Link failed: Build\Bin\release-Windows\Essai\Essai.exe
 
 ┌──────────────────────────────────────────────────────────────────────────────────────────────┐
-│  ✗ Build Failed                                                                 Time: 0.94s  │
+│  ✗ Build Failed                                                                 Time: 0.87s  │
 │ Errors: 1  | Failed files: 1                                                                 │
 └──────────────────────────────────────────────────────────────────────────────────────────────┘
 
@@ -111,7 +112,7 @@ Build Order (2 projects):
 Projects Built:  1/2
 Failed:         1
 Errors:         1
-Time:           1.72s
+Time:           1.75s
 Status:         ✗ FAILURE
 ════════════════════════════════════════════════════════════════════════════════
 
