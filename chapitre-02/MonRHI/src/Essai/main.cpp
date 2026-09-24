@@ -1,4 +1,4 @@
-#include <iostream>
+#include "MonRhi/MonRhi.h"
 
 int main() {
     std::cout << "Hello from Essai!" << std::endl;
