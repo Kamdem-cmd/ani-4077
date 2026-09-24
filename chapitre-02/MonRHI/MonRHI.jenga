@@ -1,40 +1,33 @@
 from Jenga import *
 
-with workspace("MonRhiWks", location="."):
-    configurations(["Debug", "Release"])
+# with workspace("MonRhiWks", location="."):
+configurations(["Debug", "Release"])
 
-    # 1. Bibliothèque utilitaire de bas niveau
-    with project("MonUtil"):
-        staticlib()
-        language("C++")
-        cppdialect("C++17")
-        location(".")
-        files(["src/MonUtil/**.cpp"])
-        includedirs(["src"])
-        objdir("%{wks.location}/Build/Obj/%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
-        targetdir("%{wks.location}/Build/Lib/%{cfg.buildcfg}-%{cfg.system}")
+# La bibliotheque : du code compile, sans main.
+with project("MonRhi"):
+    staticlib()
+    language("C++")
+    cppdialect("C++17")
+    location(".")
+    files(["src/MonRhi/**.cpp"])
+    includedirs(["src"])
+    objdir("%{wks.location}/Build/Obj/"
+            "%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
+    targetdir("%{wks.location}/Build/Lib/"
+                "%{cfg.buildcfg}-%{cfg.system}")
 
-    # 2. Bibliothèque RHI (dépend de MonUtil)
-    with project("MonRhi"):
-        staticlib()
-        language("C++")
-        cppdialect("C++17")
-        location(".")
-        files(["src/MonRhi/**.cpp"])
-        includedirs(["src"])
-        links(["MonUtil"])
-        objdir("%{wks.location}/Build/Obj/%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
-        targetdir("%{wks.location}/Build/Lib/%{cfg.buildcfg}-%{cfg.system}")
-
-    # 3. Application cliente
-    with project("Essai"):
-        consoleapp()
-        language("C++")
-        cppdialect("C++17")
-        location(".")
-        files(["src/Essai/**.cpp"])
-        includedirs(["src"])
-        libdirs(["%{wks.location}/Build/Lib/%{cfg.buildcfg}-%{cfg.system}"])
-        links(["MonRhi", "MonUtil"])  # Dépendances de liens
-        objdir("%{wks.location}/Build/Obj/%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
-        targetdir("%{wks.location}/Build/Bin/%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
+# Le programme qui s'en sert.
+with project("Essai"):
+    consoleapp()
+    language("C++")
+    cppdialect("C++17")
+    location(".")
+    files(["src/Essai/**.cpp"])
+    includedirs(["src"])
+    libdirs(["%{wks.location}/Build/Lib/"
+                "%{cfg.buildcfg}-%{cfg.system}"])
+    links(["MonRhi"])
+    objdir("%{wks.location}/Build/Obj/"
+            "%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
+    targetdir("%{wks.location}/Build/Bin/"
+                "%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
