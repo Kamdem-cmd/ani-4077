@@ -1,6 +1,4 @@
 from Jenga import *
-import sys
-print("configurations :", ["Debug", "Release"], file=sys.stderr)
 
 with workspace("MonRhiWks", location="."):
     configurations(["Debug", "Release"])
