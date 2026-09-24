@@ -1,4 +1,4 @@
-# ANI-4067 — Chapitre 02 : Exercice 1
+# ANI-4067 — Chapitre 02 : demo 1
 
 ---
 
