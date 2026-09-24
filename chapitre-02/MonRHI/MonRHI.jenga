@@ -26,7 +26,7 @@ with workspace("MonRhiWks", location="."):
         includedirs(["src"])
         libdirs(["%{wks.location}/Build/Lib/"
                  "%{cfg.buildcfg}-%{cfg.system}"])
-        # links(["MonRhi"])
+        links(["MonRhi"])
         objdir("%{wks.location}/Build/Obj/"
                "%{cfg.buildcfg}-%{cfg.system}/%{prj.name}")
         targetdir("%{wks.location}/Build/Bin/"
