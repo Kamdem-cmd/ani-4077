@@ -1,3 +1,9 @@
+#include "NKWindow/NKMain.h"
+#include "NKWindow/NKWindow.h" 
+#include "NKLogger/NkLog.h"
+#include "NKTime/NkChrono.h"
+#include "NKEvent/NkWindowEvent.h"
+
 #include <iostream>
 #include <string>
 
@@ -13,7 +19,7 @@ int parse_version_code(const std::string& str) {
     return majeur * 10 + mineur;
 }
 
-int main() {
+int nkmain(const nkentseu::NkEntryState &state) {
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(NULL);
 
