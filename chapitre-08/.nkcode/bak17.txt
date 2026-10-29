@@ -1,0 +1,8 @@
+Ce qui ne change pas :
+La couleur du pixel central ainsi que le rendu visuel global restent strictement identiques lorsque le tri des faces est désactivé, car tous les triangles spécifiés par les index sont rastérisés indépendamment de l'ordre d'enroulement de leurs sommets.
+
+Ce que change le tri :
+L'activation du test de rejet des faces (`GL_CULL_FACE`) provoque la disparition de certains triangles ou leur masquage total (laissant apparaître la couleur de fond duglClear) selon l'orientation des index fournis pour le dernier ordre testé.
+
+La règle que suit le tri :
+Le tri des faces utilise le sens trigonométrique d'enroulement des sommets dans l'espace écran (anti-horaire par défaut pour identifier les faces avant) : un ordre d'indexation inversé par rapport à cette convention inverse la normale apparente de la face, ce qui entraîne son élimination par le culling des faces arrière.

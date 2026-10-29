@@ -1,5 +1,5 @@
 nksession/2
-active 15
+active 19
 ui 0 1
 F 13 4 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-06/exo1-le_triangle_qui_ne_s_affiche_pas/projet.jenga
 F 7 19 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-06/exo10-votre_classe_de_maillage_eprouvee/projet.jenga
@@ -15,5 +15,9 @@ F 0 0 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-06/exo1-le_triangle_qui_n
 F 0 0 0 1 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo1-le_carre_des_deux_facons/MonRhi.jenga
 F 189 1 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo1-le_carre_des_deux_facons/main.cpp
 F 5 34 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo1-le_carre_des_deux_facons/carre.txt
-F 72 21 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo1-le_carre_des_deux_facons/maille.cpp
+F 72 21 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo1-le_carre_des_deux_facons/maillage.cpp
 F 7 320 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo1-le_carre_des_deux_facons/reponse.txt
+F 5 52 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo2-l_ordre_des_index/ordres.txt
+F 7 330 0 1 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo2-l_ordre_des_index/reponse.txt
+F 72 21 0 1 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo2-l_ordre_des_index/maillage.cpp
+F 156 1 0 1 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo2-l_ordre_des_index/main.cpp
