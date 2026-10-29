@@ -1,151 +1,78 @@
-#include <iostream>
-#include <string>
-#include <map>
-#include <set>
+#include "Maillage.h"
+#include "Gl.h"
 
-// Genre de contexte
-enum class Genre {
-    ANCIEN,
-    CORE
-};
+namespace monrhi {
 
-struct ContextInfo {
-    Genre genre;
-};
-
-int main() {
-    std::ios_base::sync_with_stdio(false);
-    std::cin.tie(NULL);
-
-    int n = 0;
-    if (!(std::cin >> n)) {
-        std::cout << "ERREURS 0\n";
-        std::cout << "COURANT AUCUN\n";
-        std::cout << "PROFIL AUCUN\n";
-        std::cout << "VIVANTS 0\n";
-        return 0;
+    Maillage::~Maillage() {
+        Detruire();
     }
 
-    // État initial de la machine à états
-    bool has_dc = false;
-    bool has_format = false;
-    bool wgl_loaded = false;
-    bool gl_loaded = false;
-    
-    std::string current_ctx = "AUCUN";
-    std::map<std::string, ContextInfo> contexts;
+    void Maillage::Creer(const Sommet *sommets, int nombreSommets) {
+        Detruire();
+        mNombre = nombreSommets;
 
-    int erreurs = 0;
+        glGenVertexArrays(1, &mVao);
+        glGenBuffers(1, &mVbo);
 
-    for (int i = 1; i <= n; ++i) {
-        std::string cmd;
-        std::cin >> cmd;
+        glBindVertexArray(mVao);
 
-        std::string status = "OK";
+        glBindBuffer(GL_ARRAY_BUFFER, mVbo);
+        glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Sommet) * (size_t)nombreSommets), sommets, GL_STATIC_DRAW);
 
-        if (cmd == "GETDC") {
-            has_dc = true;
-        } 
-        else if (cmd == "FORMAT") {
-            if (!has_dc) {
-                status = "ERREUR PAS DE DC";
-            } else if (has_format) {
-                status = "ERREUR FORMAT DEJA POSE";
-            } else {
-                has_format = true;
-            }
-        } 
-        else if (cmd == "CREER") {
-            std::string nom;
-            std::cin >> nom;
-            if (!has_format) {
-                status = "ERREUR PAS DE FORMAT";
-            } else if (contexts.find(nom) != contexts.end()) {
-                status = "ERREUR NOM PRIS";
-            } else {
-                contexts[nom] = {Genre::ANCIEN};
-            }
-        } 
-        else if (cmd == "CREER_ATTRIBS") {
-            std::string nom;
-            std::cin >> nom;
-            if (!has_format) {
-                status = "ERREUR PAS DE FORMAT";
-            } else if (!wgl_loaded) {
-                status = "ERREUR EXTENSION NON CHARGEE";
-            } else if (contexts.find(nom) != contexts.end()) {
-                status = "ERREUR NOM PRIS";
-            } else {
-                contexts[nom] = {Genre::CORE};
-            }
-        } 
-        else if (cmd == "COURANT") {
-            std::string nom;
-            std::cin >> nom;
-            if (nom == "AUCUN") {
-                current_ctx = "AUCUN";
-            } else {
-                if (contexts.find(nom) == contexts.end()) {
-                    status = "ERREUR CONTEXTE INCONNU";
-                } else {
-                    current_ctx = nom;
-                }
-            }
-        } 
-        else if (cmd == "CHARGER_WGL") {
-            if (current_ctx == "AUCUN") {
-                status = "ERREUR PAS DE CONTEXTE COURANT";
-            } else {
-                wgl_loaded = true;
-            }
-        } 
-        else if (cmd == "CHARGER_GL") {
-            if (current_ctx == "AUCUN") {
-                status = "ERREUR PAS DE CONTEXTE COURANT";
-            } else {
-                gl_loaded = true;
-            }
-        } 
-        else if (cmd == "DETRUIRE") {
-            std::string nom;
-            std::cin >> nom;
-            if (contexts.find(nom) == contexts.end()) {
-                status = "ERREUR CONTEXTE INCONNU";
-            } else if (current_ctx == nom) {
-                status = "ERREUR CONTEXTE COURANT";
-            } else {
-                contexts.erase(nom);
-            }
-        } 
-        else if (cmd == "GL") {
-            std::string fn;
-            std::cin >> fn;
-            if (current_ctx == "AUCUN" || !gl_loaded) {
-                status = "PLANTAGE ADRESSE ZERO";
-            }
-        }
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Sommet), (void*)0);
+        glEnableVertexAttribArray(0);
 
-        if (status != "OK") {
-            erreurs++;
-        }
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Sommet), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
 
-        std::cout << i << " " << status << "\n";
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    // Calcul du bilan
-    std::string profil = "AUCUN";
-    if (current_ctx != "AUCUN") {
-        if (contexts[current_ctx].genre == Genre::CORE) {
-            profil = "CORE";
+    void Maillage::CreerIndexe(const Sommet *sommets, int nombreSommets, const unsigned short *index, int nombreIndex) {
+        Detruire();
+        mNombre = nombreIndex;
+
+        glGenVertexArrays(1, &mVao);
+        glGenBuffers(1, &mVbo);
+
+        glBindVertexArray(mVao);
+
+        glBindBuffer(GL_ARRAY_BUFFER, mVbo);
+        glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)(sizeof(Sommet) * (size_t)nombreSommets), sommets, GL_STATIC_DRAW);
+
+        glGenBuffers(1, &mEbo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEbo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)(sizeof(unsigned short) * (size_t)nombreIndex), index, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Sommet), (void*)0);
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Sommet), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+
+        // PIÈGE DE L'EXERCICE 3 : Délier l'EBO avant le VAO efface son association dans le VAO
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
+
+    void Maillage::Detruire() {
+        if (mVao != 0) { glDeleteVertexArrays(1, &mVao); mVao = 0; }
+        if (mVbo != 0) { glDeleteBuffers(1, &mVbo); mVbo = 0; }
+        if (mEbo != 0) { glDeleteBuffers(1, &mEbo); mEbo = 0; }
+        mNombre = 0;
+    }
+
+    void Maillage::Dessiner() const {
+        glBindVertexArray(mVao);
+        if (mEbo != 0) {
+            glDrawElements(GL_TRIANGLES, (GLsizei)mNombre, GL_UNSIGNED_SHORT, (const void *)0);
         } else {
-            profil = "COMPATIBILITE";
+            glDrawArrays(GL_TRIANGLES, 0, (GLsizei)mNombre);
         }
+        glBindVertexArray(0);
     }
 
-    std::cout << "ERREURS " << erreurs << "\n";
-    std::cout << "COURANT " << current_ctx << "\n";
-    std::cout << "PROFIL " << profil << "\n";
-    std::cout << "VIVANTS " << contexts.size() << "\n";
-
-    return 0;
-}
+} // namespace monrhi

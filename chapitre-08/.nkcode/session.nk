@@ -1,5 +1,5 @@
 nksession/2
-active 20
+active 22
 ui 0 1
 F 13 4 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-06/exo1-le_triangle_qui_ne_s_affiche_pas/projet.jenga
 F 7 19 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-06/exo10-votre_classe_de_maillage_eprouvee/projet.jenga
@@ -21,7 +21,9 @@ F 5 52 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo2-l_ordre_des_inde
 F 7 330 0 1 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo2-l_ordre_des_index/reponse.txt
 F 71 21 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo2-l_ordre_des_index/Maillage.cpp
 F 468 1 0 1 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo2-l_ordre_des_index/main.cpp
-F 181 24 0 1 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo4-la_grille_calculee_puis_franchie/main.cpp
+F 206 1 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo4-la_grille_calculee_puis_franchie/main.cpp
 F 97 0 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo4-la_grille_calculee_puis_franchie/Maillage.cpp
-F 4 62 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo4-la_grille_calculee_puis_franchie/grille.txt
-F 7 426 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo4-la_grille_calculee_puis_franchie/reponse.txt
+F 4 27 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo4-la_grille_calculee_puis_franchie/grille.txt
+F 7 274 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo4-la_grille_calculee_puis_franchie/reponse.txt
+F 77 21 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo3-casser_le_tableau_en_deliant/Maillage.cpp
+F 1 0 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo3-casser_le_tableau_en_deliant/casse.txt

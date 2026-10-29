@@ -142,17 +142,34 @@ int nkmain(const NkEntryState &state) {
     logger.Infof("grille %d : %d sommets, index sur 2 octets, %zu octets", N_grand, totalSommets, octetsGrille2);
     logger.Infof("grille %d : %d sommets, index sur 4 octets, %zu octets", N_grand, totalSommets, octetsGrille4);
 
-    // Boucle de rendu (pour effectuer les captures index-2-octets.png et index-4-octets.png)
-    monrhi::Maillage grilleMaillage;
-    // Test avec 2 octets (attention au dépassement de 65535 si N_grand > 256, ici 70225 va saturer les unsigned short)
-    grilleMaillage.CreerIndexe(sommets.data(), totalSommets, index16.data(), totalIndex);
+    // Création des deux maillages (ou un seul que l'on recrée/met à jour, ou deux distincts pour un basculement instantané)
+    monrhi::Maillage maillage16bits;
+    maillage16bits.CreerIndexe(sommets.data(), totalSommets, index16.data(), totalIndex);
 
-    int imageCount = 0;
+    monrhi::Maillage maillage32bits;
+    maillage32bits.CreerIndexe32(sommets.data(), totalSommets, index32.data(), totalIndex);
+
+    bool utiliser32bits = false; // Par défaut, on commence avec les index sur 2 octets (16 bits)
+    logger.Infof("Mode actuel : Index sur 2 octets (GL_UNSIGNED_SHORT)");
+
     bool tourne = true;
     while (tourne && fenetre.IsOpen()) {
         NkEvent *ev = nullptr;
         while (NkEvents().PollEvent(ev)) {
-            if (ev->As<NkWindowCloseEvent>() != nullptr) tourne = false;
+            if (ev->As<NkWindowCloseEvent>() != nullptr) {
+                tourne = false;
+            }
+            // Gestion de l'appui sur une touche pour basculer (ex: touche Espace ou autre selon les événements de ton framework)
+            auto keyEvent = ev->As<NkKeyPressEvent>(); // ou l'équivalent dans ton framework pour les touches pressées
+            if (keyEvent != nullptr) {
+                // Basculement lors d'un appui (par exemple, si tu utilises un événement de touche)
+                utiliser32bits = !utiliser32bits;
+                if (utiliser32bits) {
+                    logger.Infof("Bascule : Index sur 4 octets (GL_UNSIGNED_INT)");
+                } else {
+                    logger.Infof("Bascule : Index sur 2 octets (GL_UNSIGNED_SHORT)");
+                }
+            }
         }
         if (!tourne) break;
 
@@ -168,17 +185,21 @@ int nkmain(const NkEntryState &state) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         nuanceur.Activer();
-        grilleMaillage.Dessiner();
 
-        imageCount++;
-        // Tu peux déclencher la capture de l'image ici ou via une touche / un compteur d'images
-        // Exemple : sauvegarde de index-2-octets.png à l'image 10, puis bascule en index32 pour index-4-octets.png à l'image 30.
+        // Dessin selon le mode actif
+        if (utiliser32bits) {
+            maillage32bits.Dessiner();
+        } else {
+            maillage16bits.Dessiner();
+        }
 
         contexte.Echanger();
         NkChrono::YieldThread();
     }
 
-    grilleMaillage.Detruire();
+    maillage16bits.Detruire();
+    maillage32bits.Detruire();
+
     nuanceur.Detruire();
     contexte.Detruire();
     NkClose();
