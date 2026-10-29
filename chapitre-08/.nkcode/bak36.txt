@@ -1,0 +1,8 @@
+Le gain mesuré :
+L'utilisation d'un tampon d'uniformes présente ici des temps légèrement supérieurs ou proches de la méthode classique par appels unitaires glUniform sur un petit volume d'objets, car la gestion des liaisons de blocs uniformes et du paramétrage des plages dans une boucle séquentielle introduit un surcoût qui ne surpasse les appels directs qu'à grande échelle.
+
+Ce que fait l'alignement :
+Les règles du layout std140 imposent des contraintes d'alignement strictes (notamment le positionnement de uTeinte à l'octet 16). En supprimant le trou (« version serrée »), les données lues par le nuanceur ne correspondent plus aux emplacements réels écrits dans le tampon, ce qui décale les teintes et engendre l'aberration visuelle capturée dans serre.png sans qu'aucun message d'erreur ne soit émis par le pilote.
+
+Ce que le moteur y gagne :
+Au-delà du temps mesuré sur cent objets, un tampon d'uniformes permet au moteur de pré-charger l'ensemble des constantes de centaines ou de milliers d'objets en une seule et unique écriture mémoire globale, facilitant la mise en cache et réduisant drastiquement les communications CPU-GPU lors des boucles de rendu complexes.

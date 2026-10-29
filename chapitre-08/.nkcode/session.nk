@@ -1,5 +1,5 @@
 nksession/2
-active 32
+active 36
 ui 0 1
 F 13 4 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-06/exo1-le_triangle_qui_ne_s_affiche_pas/projet.jenga
 F 7 19 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-06/exo10-votre_classe_de_maillage_eprouvee/projet.jenga
@@ -31,7 +31,10 @@ F 0 0 0 0 0 Tableau 1.nktableau
 F 2 5 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo5-l_uniforme_qui_disparait/emplacements.txt
 F 165 1 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo5-l_uniforme_qui_disparait/main.cpp
 F 7 234 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo5-l_uniforme_qui_disparait/reponse.txt
-F 174 0 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo6-cent_objets_un_tampon/nuanceur.cpp
+F 42 37 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo6-cent_objets_un_tampon/nuanceur.cpp
 F 215 1 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo6-cent_objets_un_tampon/main.cpp
 F 1 74 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo6-cent_objets_un_tampon/cent.txt
 F 7 285 0 1 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo6-cent_objets_un_tampon/reponse.txt
+F 2 16 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo10-un_tampon_d_uniformes/uniformes.txt
+F 262 1 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo10-un_tampon_d_uniformes/main.cpp
+F 7 190 0 0 0 D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/exo10-un_tampon_d_uniformes/reponse.txt
