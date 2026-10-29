@@ -50,7 +50,6 @@ void Maillage::CreerIndexe(const Sommet *sommets, int nombreSommets, const unsig
 
     mNombre = nombreIndex;
 }
-
 void Maillage::Dessiner() const {
     glBindVertexArray(mVao);
     if (mEbo != 0) {
