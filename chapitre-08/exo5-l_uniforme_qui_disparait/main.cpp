@@ -1,104 +1,166 @@
-#include <iostream>
-#include <string>
-#include <vector>
-#include <algorithm>
+#include "NKWindow/NKMain.h"
+#include "NKWindow/Core/NkWindow.h"
+#include "NKWindow/Core/NkWindowConfig.h"
+#include "NKWindow/Core/NkSurface.h"
+#include "NKEvent/NkEventSystem.h"
+#include "NKEvent/NkWindowEvent.h"
 
-struct Format {
-    int numero;
-    int couleur;
-    int profondeur;
-    int pochoir;
-    int double_tampon;
-};
+#include "NKLogger/NkLog.h"
+#include "NKPlatform/NkEnv.h"
+#include "NKTime/NkChrono.h"
+#include "MonRhi/MonRhi.h"
+#include "MonRhi/Contexte.h"
+#include "MonRhi/Maillage.h"
+#include "MonRhi/Nuanceur.h"
+#include "MonRhi/Gl.h"
 
-std::string get_etat(int demande, int offert) {
-    if (offert == demande) return "EXACT";
-    if (offert < demande) return "RABOTE";
-    return "PLUS";
+#include <cstdio>
+#include <cstdlib>
+
+using namespace nkentseu;
+
+namespace {
+    // Version 1 : uInutile déclaré mais jamais employé
+    const char *kSommetsV1 = R"(
+layout(location = 0) in vec3 aPosition;
+layout(location = 1) in vec3 aCouleur;
+uniform vec2 uDecalage;
+uniform vec3 uTeinte;
+uniform vec3 uInutile;
+out vec3 vCouleur;
+void main() {
+    vCouleur = aCouleur * uTeinte;
+    gl_Position = vec4(aPosition.xy + uDecalage, aPosition.z, 1.0);
+}
+)";
+
+    // Version 2 : uInutile employé avec un coefficient nul (0.0)
+    const char *kSommetsV2 = R"(
+layout(location = 0) in vec3 aPosition;
+layout(location = 1) in vec3 aCouleur;
+uniform vec2 uDecalage;
+uniform vec3 uTeinte;
+uniform vec3 uInutile;
+out vec3 vCouleur;
+void main() {
+    vCouleur = aCouleur * uTeinte + 0.0 * uInutile;
+    gl_Position = vec4(aPosition.xy + uDecalage, aPosition.z, 1.0);
+}
+)";
+
+    // Version 3 : uInutile employé avec un coefficient non nul (0.001)
+    const char *kSommetsV3 = R"(
+layout(location = 0) in vec3 aPosition;
+layout(location = 1) in vec3 aCouleur;
+uniform vec2 uDecalage;
+uniform vec3 uTeinte;
+uniform vec3 uInutile;
+out vec3 vCouleur;
+void main() {
+    vCouleur = aCouleur * uTeinte + 0.001 * uInutile;
+    gl_Position = vec4(aPosition.xy + uDecalage, aPosition.z, 1.0);
+}
+)";
+
+    const char *kFragments = R"(
+in vec3 vCouleur;
+out vec4 oCouleur;
+void main() {
+    oCouleur = vec4(vCouleur, 1.0);
+}
+)";
+
+    const monrhi::Sommet kCarreCoins[4] = {
+        { -0.20f, -0.20f, 0.0f,  0.96f, 0.62f, 0.14f },
+        {  0.20f, -0.20f, 0.0f,  0.20f, 0.75f, 0.70f },
+        {  0.20f,  0.20f, 0.0f,  0.90f, 0.30f, 0.35f },
+        { -0.20f,  0.20f, 0.0f,  0.95f, 0.95f, 0.95f },
+    };
+    const unsigned short kCarreIndex[6] = { 0, 1, 2,   0, 2, 3 };
 }
 
-int main() {
-    std::ios_base::sync_with_stdio(false);
-    std::cin.tie(NULL);
+int nkmain(const NkEntryState &state) {
+    (void)state;
+    NkInitialise();
+    NkChrono::BeginPreciseTiming();
 
-    int req_c = 0, req_p = 0, req_s = 0, req_dbl = 0;
-    if (!(std::cin >> req_c >> req_p >> req_s >> req_dbl)) {
-        std::cout << "AUCUN FORMAT\n";
-        return 0;
+    NkWindowConfig cfg;
+    cfg.title = "Chapitre 08 - Exo 5 : L'uniforme qui disparait";
+    cfg.width = 1280;
+    cfg.height = 720;
+    cfg.centered = true;
+
+    NkWindow fenetre(cfg);
+    if (!fenetre.IsValid()) {
+        logger.Error("la fenetre ne s'est pas ouverte");
+        NkClose();
+        return 1;
     }
 
-    int n = 0;
-    if (!(std::cin >> n)) {
-        std::cout << "AUCUN FORMAT\n";
-        return 0;
+    const NkSurfaceDesc surface = fenetre.GetSurfaceDesc();
+    monrhi::Contexte contexte;
+    if (!contexte.Creer(surface)) {
+        logger.Error("contexte impossible.");
+        NkClose();
+        return 1;
     }
 
-    bool candidate_found = false;
-    Format best_fmt;
-    int best_manque = 0;
-    int best_exces = 0;
+    // Fonction utilitaire pour tester et logger les emplacements de chaque version
+    auto testerVersion = [](const char* sourceSommets, const char* label) {
+        monrhi::Nuanceur nu;
+        if (nu.Compiler(sourceSommets, kFragments)) {
+            GLint locDecalage = glGetUniformLocation(nu.Id(), "uDecalage");
+            GLint locTeinte = glGetUniformLocation(nu.Id(), "uTeinte");
+            GLint locInutile = glGetUniformLocation(nu.Id(), "uInutile");
+            logger.Infof("%s : uDecalage %d, uTeinte %d, uInutile %d", label, locDecalage, locTeinte, locInutile);
+            nu.Detruire();
+        }
+    };
 
-    for (int i = 0; i < n; ++i) {
-        Format fmt;
-        std::cin >> fmt.numero >> fmt.couleur >> fmt.profondeur >> fmt.pochoir >> fmt.double_tampon;
+    testerVersion(kSommetsV1, "jamais employe");
+    testerVersion(kSommetsV2, "coefficient nul");
+    testerVersion(kSommetsV3, "coefficient 0.001");
 
-        // Seuls les formats dont double tampon est égal à celui demandé sont candidats
-        if (fmt.double_tampon != req_dbl) {
+    // Lancement de la boucle de rendu avec la version finale
+    monrhi::Nuanceur nuanceur;
+    if (!nuanceur.Compiler(kSommetsV3, kFragments)) {
+        contexte.Detruire();
+        NkClose();
+        return 1;
+    }
+
+    monrhi::Maillage carreIndexe;
+    carreIndexe.CreerIndexe(kCarreCoins, 4, kCarreIndex, 6);
+
+    bool tourne = true;
+    while (tourne && fenetre.IsOpen()) {
+        NkEvent *ev = nullptr;
+        while (NkEvents().PollEvent(ev)) {
+            if (ev->As<NkWindowCloseEvent>() != nullptr) tourne = false;
+        }
+        if (!tourne) break;
+
+        if (!contexte.PeutDessiner()) {
+            NkChrono::Sleep((int64)16);
             continue;
         }
 
-        int manque = 0;
-        manque += (fmt.couleur < req_c) ? (req_c - fmt.couleur) : 0;
-        manque += (fmt.profondeur < req_p) ? (req_p - fmt.profondeur) : 0;
-        manque += (fmt.pochoir < req_s) ? (req_s - fmt.pochoir) : 0;
+        const auto taille = fenetre.GetSize();
+        glViewport(0, 0, (GLsizei)taille.x, (GLsizei)taille.y);
 
-        int exces = 0;
-        exces += (fmt.couleur > req_c) ? (fmt.couleur - req_c) : 0;
-        exces += (fmt.profondeur > req_p) ? (fmt.profondeur - req_p) : 0;
-        exces += (fmt.pochoir > req_s) ? (fmt.pochoir - req_s) : 0;
+        glClearColor(0.05f, 0.25f, 0.28f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-        if (!candidate_found) {
-            candidate_found = true;
-            best_fmt = fmt;
-            best_manque = manque;
-            best_exces = exces;
-        } else {
-            if (manque < best_manque) {
-                best_fmt = fmt;
-                best_manque = manque;
-                best_exces = exces;
-            } else if (manque == best_manque) {
-                if (exces < best_exces) {
-                    best_fmt = fmt;
-                    best_exces = exces;
-                } else if (exces == best_exces) {
-                    if (fmt.numero < best_fmt.numero) {
-                        best_fmt = fmt;
-                    }
-                }
-            }
-        }
+        nuanceur.Activer();
+        carreIndexe.Dessiner();
+
+        contexte.Echanger();
+        NkChrono::YieldThread();
     }
 
-    if (!candidate_found) {
-        std::cout << "AUCUN FORMAT\n";
-        return 0;
-    }
-
-    std::string etat_c = get_etat(req_c, best_fmt.couleur);
-    std::string etat_p = get_etat(req_p, best_fmt.profondeur);
-    std::string etat_s = get_etat(req_s, best_fmt.pochoir);
-
-    int rabotes = 0;
-    if (etat_c == "RABOTE") rabotes++;
-    if (etat_p == "RABOTE") rabotes++;
-    if (etat_s == "RABOTE") rabotes++;
-
-    std::cout << "FORMAT " << best_fmt.numero << "\n";
-    std::cout << "couleur " << req_c << " " << best_fmt.couleur << " " << etat_c << "\n";
-    std::cout << "profondeur " << req_p << " " << best_fmt.profondeur << " " << etat_p << "\n";
-    std::cout << "pochoir " << req_s << " " << best_fmt.pochoir << " " << etat_s << "\n";
-    std::cout << "RABOTES " << rabotes << "\n";
-
+    carreIndexe.Detruire();
+    nuanceur.Detruire();
+    contexte.Detruire();
+    NkClose();
     return 0;
 }

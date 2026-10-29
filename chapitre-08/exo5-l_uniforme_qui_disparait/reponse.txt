@@ -1,0 +1,8 @@
+Les deux premières valeurs :
+Lorsque l'uniforme n'est jamais employé, le compilateur du pilote l'optimise et retourne la valeur -1, tandis que l'utilisation de cet uniforme avec un coefficient littéralement nul (0.0) amène le pilote à lui allouer un emplacement actif dès lors qu'il figure explicitement dans les expressions du code source.
+
+Le coefficient 0.001 :
+L'utilisation d'un coefficient non nul (0.001) maintient la participation effective de l'uniforme au calcul de la couleur, ce qui se traduit par l'attribution d'un emplacement actif identique à celui observé lors du test avec le coefficient nul.
+
+Comment reconnaître le piège :
+Pour trancher ce type de problème en une minute, il suffit d'interroger systématiquement l'emplacement de l'uniforme à l'aide de glGetUniformLocation : si la fonction retourne -1, cela confirme que le pilote l'a supprimé du programme lié, évitant ainsi de chercher une erreur de syntaxe ou de nommage inexistante.
