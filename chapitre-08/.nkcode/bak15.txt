@@ -1,0 +1,8 @@
+Le nombre qui a le plus augmenté :
+L'économie d'octets absolue ainsi que le pourcentage d'économie ont tous deux nettement augmenté entre le carré et la maison, passant respectivement de 36 à 78 octets et de 25,0 % à 36,11 %.
+
+Pourquoi :
+Parce que la complexité géométrique de la forme s'accroît et introduit davantage de triangles contigus. L'utilisation d'un tampon d'indexation (EBO) permet d'éviter de dupliquer les sommets partagés (pesant chacun 24 octets), maximisant ainsi le gain d'espace proportionnellement au nombre de répétitions de sommets évitées.
+
+Où sont les sommets repris :
+Les sommets repris se situent au niveau des coins et des articulations géométriques partagés par plusieurs triangles adjacents (par exemple, les angles de la base de la maison et le sommet central du toit), qui ne sont stockés qu'une seule fois dans le tableau unique mais référencés plusieurs fois par les index.

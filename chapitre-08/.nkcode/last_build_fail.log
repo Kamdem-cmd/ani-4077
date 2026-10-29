@@ -1,0 +1,96 @@
+$ jenga build --target exo1 --config Debug --platform Windows-x86_64 --jenga-file "D:/ENSPY/AN-GAP_4/teguis/ani-4077/chapitre-08/chapitre-08.jenga"
+
+Configuration: Debug
+Target:        Windows x86_64
+Toolchain:     clang-mingw
+
+Build Order (1 projects):
+  1. exo1 [WINDOWED_APP]
+
+
+╔══════════════════════════════════════════════════════════════════════════════════════════════╗
+║  Project: exo1                                                           Kind: WINDOWED_APP  ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════╝
+
+ℹ Found 7 source file(s)
+✓   [1/7] Compiled: maille.cpp
+
+╔══════════════════════════════════════════════════════════════════════════════════════════════╗
+║                               Compilation Error: Contexte.cpp                                ║
+╠══════════════════════════════════════════════════════════════════════════════════════════════╣
+║ D:\ENSPY\AN-GAP_4\teguis\ani-4077\chapitre-08\exo1-le_carre_des_deux_facons\src\MonRhi\Conte ║
+║ xte.cpp:24:10: fatal error: 'MonRhi/Contexte.h' file not found                               ║
+║    24 | #include "MonRhi/Contexte.h"                                                         ║
+║       |          ^~~~~~~~~~~~~~~~~~~                                                         ║
+║ 1 error generated.                                                                           ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════╝
+
+✗ ✗ Compilation failed: D:\ENSPY\AN-GAP_4\teguis\ani-4077\chapitre-08\exo1-le_carre_des_deux_facons\src\MonRhi\Contexte.cpp
+
+╔══════════════════════════════════════════════════════════════════════════════════════════════╗
+║                               Compilation Error: Maillage.cpp                                ║
+╠══════════════════════════════════════════════════════════════════════════════════════════════╣
+║ D:\ENSPY\AN-GAP_4\teguis\ani-4077\chapitre-08\exo1-le_carre_des_deux_facons\src\MonRhi\Maill ║
+║ age.cpp:4:10: fatal error: 'MonRhi/Maillage.h' file not found                                ║
+║     4 | #include "MonRhi/Maillage.h"                                                         ║
+║       |          ^~~~~~~~~~~~~~~~~~~                                                         ║
+║ 1 error generated.                                                                           ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════╝
+
+✗ ✗ Compilation failed: D:\ENSPY\AN-GAP_4\teguis\ani-4077\chapitre-08\exo1-le_carre_des_deux_facons\src\MonRhi\Maillage.cpp
+
+╔══════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                 Compilation Error: main.cpp                                  ║
+╠══════════════════════════════════════════════════════════════════════════════════════════════╣
+║ D:\ENSPY\AN-GAP_4\teguis\ani-4077\chapitre-08\exo1-le_carre_des_deux_facons\src\Essai\main.c ║
+║ pp:25:10: fatal error: 'MonRhi/MonRhi.h' file not found                                      ║
+║    25 | #include "MonRhi/MonRhi.h"                                                           ║
+║       |          ^~~~~~~~~~~~~~~~~                                                           ║
+║ 1 error generated.                                                                           ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════╝
+
+✗ ✗ Compilation failed: D:\ENSPY\AN-GAP_4\teguis\ani-4077\chapitre-08\exo1-le_carre_des_deux_facons\src\Essai\main.cpp
+
+╔══════════════════════════════════════════════════════════════════════════════════════════════╗
+║                               Compilation Error: Nuanceur.cpp                                ║
+╠══════════════════════════════════════════════════════════════════════════════════════════════╣
+║ D:\ENSPY\AN-GAP_4\teguis\ani-4077\chapitre-08\exo1-le_carre_des_deux_facons\src\MonRhi\Nuanc ║
+║ eur.cpp:4:10: fatal error: 'MonRhi/Nuanceur.h' file not found                                ║
+║     4 | #include "MonRhi/Nuanceur.h"                                                         ║
+║       |          ^~~~~~~~~~~~~~~~~~~                                                         ║
+║ 1 error generated.                                                                           ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════╝
+
+✗ ✗ Compilation failed: D:\ENSPY\AN-GAP_4\teguis\ani-4077\chapitre-08\exo1-le_carre_des_deux_facons\src\MonRhi\Nuanceur.cpp
+✓   [6/7] Compiled: main.cpp
+
+╔══════════════════════════════════════════════════════════════════════════════════════════════╗
+║                                Compilation Error: MonRhi.cpp                                 ║
+╠══════════════════════════════════════════════════════════════════════════════════════════════╣
+║ D:\ENSPY\AN-GAP_4\teguis\ani-4077\chapitre-08\exo1-le_carre_des_deux_facons\src\MonRhi\MonRh ║
+║ i.cpp:1:10: fatal error: 'MonRhi/MonRhi.h' file not found                                    ║
+║     1 | #include "MonRhi/MonRhi.h"                                                           ║
+║       |          ^~~~~~~~~~~~~~~~~                                                           ║
+║ 1 error generated.                                                                           ║
+╚══════════════════════════════════════════════════════════════════════════════════════════════╝
+
+✗ ✗ Compilation failed: D:\ENSPY\AN-GAP_4\teguis\ani-4077\chapitre-08\exo1-le_carre_des_deux_facons\src\MonRhi\MonRhi.cpp
+
+┌──────────────────────────────────────────────────────────────────────────────────────────────┐
+│  ✗ Build Failed                                                                Time: 1m7.5s  │
+│ Errors: 10  | Failed files: 5                                                                │
+└──────────────────────────────────────────────────────────────────────────────────────────────┘
+
+════════════════════════════════════════════════════════════════════════════════
+                                  BUILD FAILED                                  
+════════════════════════════════════════════════════════════════════════════════
+Projects Built:  0/1
+Failed:         1
+Errors:         10
+Time:           1m7.5s
+Status:         ✗ FAILURE
+════════════════════════════════════════════════════════════════════════════════
+
+Echecs (1) — a corriger :
+  ✗ exo1
+

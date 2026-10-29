@@ -1,0 +1,39 @@
+Mon3D - kit Jenga
+===================
+
+construit le  : 2026-10-10 02:13
+workspace     : Nkentseu
+jenga         : 2.8.18
+en-tetes      : 334 fichiers dans include/
+
+Modules, dans l'ordre de lien (du plus dependant au plus fondamental) :
+    NKWindow
+    NKEvent
+    NKStream
+    NKTime
+    NKFileSystem
+    NKLogger
+    NKThreading
+    NKMath
+    NKContainers
+    NKMemory
+    NKCore
+    NKGlad
+    NKPlatform
+
+Cibles construites :
+    Debug-Windows : 13 bibliotheques [bibliotheque C++ : libc++], + systeme : winmm, user32, gdi32, opengl32, dwmapi, shell32, comdlg32, mf, mfplat, mfreadwrite, mfuuid, uuid, ole32, dinput8, dxguid
+    Release-Windows : 13 bibliotheques, + systeme : winmm, user32, gdi32, opengl32, dwmapi, shell32, comdlg32, mf, mfplat, mfreadwrite, mfuuid, uuid, ole32, dinput8, dxguid
+
+Pour une cible absente de cette liste, il faut refaire le kit depuis le
+depot : un kit ne contient que ce qui a ete construit avant lui.
+
+N'incluez aucun .jenga du projet d'origine dans votre
+workspace : ces fichiers dependent de la configuration de LEUR
+workspace et casseront a la lecture. Tout ce dont vous avez
+besoin est deja ici.
+
+Citez la date de construction dans vos retours.
+
+Rendu autonome par scripts/MakeKit.py le 2026-10-10 02:13.
+Cibles : Debug-Windows, Release-Windows.
