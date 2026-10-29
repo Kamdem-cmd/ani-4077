@@ -1,0 +1,8 @@
+Le temps :
+L'utilisation d'un tampon unique partagé avec des uniformes dynamiques présente un temps de dessin et un intervalle par image légèrement inférieurs ou très proches de la version à cent tampons, car le regroupement des appels de rendu et l'économie de liaisons de tampons compensent largement le coût des mises à jour d'uniformes.
+
+La mémoire :
+La version à un tampon n'occupe que 10 800 octets pour stocker une seule géométrie de carré partagée, tandis que la version à cent tampons duplique cette géométrie cent fois, atteignant 10 800 octets. Pour un millier d'objets, cette empreinte passerait respectivement à 10 800 octets contre 108 000 octets, illustrant l'explosion linéaire de la mémoire en l'absence de partage.
+
+Ce que je choisirais :
+Je choisirais l'approche par maillage partagé et uniformes (un tampon), car elle offre une scalabilité mémoire exceptionnelle et préserve les ressources du système tout en conservant d'excellentes performances temporelles pour l'affichage d'un grand nombre d'objets similaires.)pp
