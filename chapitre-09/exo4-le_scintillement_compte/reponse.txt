@@ -1,0 +1,8 @@
+La formule :
+Pour une grille de N × N sommets comportant (N-1) × (N-1) cases (soit 2 × (N-1)² triangles ou 6 × (N-1)² indices), la taille sans index est de 6 × (N-1)² × sizeof(Sommet) octets, tandis que la taille avec index vaut N² × sizeof(Sommet) + 6 × (N-1)² × sizeof(Index) octets.
+
+Vers quoi tend le rapport :
+Le rapport d'économie (taille sans index / taille avec index) tend vers une limite théorique de 3 lorsque N devient grand, car chaque sommet intérieur d'une grille est partagé par 6 triangles adjacents, réduisant ainsi drastiquement la duplication des données géométriques par rapport au mode non indexé.
+
+Ce que montrent les deux captures :
+La capture avec des index sur 2 octets (GL_UNSIGNED_SHORT) présente des artefacts visuels majeurs et des corruptions géométriques dus au dépassement de la capacité maximale de représentation (65 535), les identifiants supérieurs rebouclant à zero. La capture avec des index sur 4 octets (GL_UNSIGNED_INT) restitue quant à elle fidèlement l'intégralité de la grille de plus de 70 000 sommets sans aucune saturation.

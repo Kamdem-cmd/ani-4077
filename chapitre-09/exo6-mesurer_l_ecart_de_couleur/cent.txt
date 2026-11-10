@@ -1,0 +1,2 @@
+un tampon : 100 objets, 1.43 ms par image, dessin 0.18 ms, 10800 octets
+cent tampons : 100 objets, 1.50 ms par image, dessin 0.18 ms, 10800 octets
