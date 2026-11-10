@@ -1,157 +1,71 @@
-#include "NKWindow/NKMain.h"
-#include "NKWindow/Core/NkWindow.h"
-#include "NKWindow/Core/NkWindowConfig.h"
-#include "NKWindow/Core/NkSurface.h"
-#include "NKEvent/NkEventSystem.h"
-#include "NKEvent/NkWindowEvent.h"
+#include <iostream>
+#include <string>
+#include <vector>
 
-#include "NKLogger/NkLog.h"
-#include "NKPlatform/NkEnv.h"
-#include "NKTime/NkChrono.h"
-#include "MonRhi/MonRhi.h"
-#include "MonRhi/Contexte.h"
-#include "MonRhi/Maillage.h"
-#include "MonRhi/Nuanceur.h"
-#include "MonRhi/Gl.h"
+struct Segment {
+    char c;
+    int debut, longueur, z;
+};
 
-#include <cstdio>
-#include <cstdlib>
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
 
-using namespace nkentseu;
+    int W = 0, S = 0, F = 0;
+    if (!(std::cin >> W >> S >> F)) return 0;
 
-namespace {
-
-    const float kPetroleR = 0.05f;
-    const float kPetroleV = 0.25f;
-    const float kPetroleB = 0.28f;
-
-    const char *kSommets = R"(
-layout(location = 0) in vec3 aPosition;
-layout(location = 1) in vec3 aCouleur;
-
-out vec3 vCouleur;
-
-void main() {
-    vCouleur = aCouleur;
-    gl_Position = vec4(aPosition, 1.0);
-}
-)";
-
-    const char *kFragments = R"(
-in vec3 vCouleur;
-
-out vec4 oCouleur;
-
-void main() {
-    oCouleur = vec4(vCouleur, 1.0);
-}
-)";
-
-    const monrhi::Sommet kCarreCoins[4] = {
-        { -0.20f, -0.20f, 0.0f,  0.96f, 0.62f, 0.14f },
-        {  0.20f, -0.20f, 0.0f,  0.20f, 0.75f, 0.70f },
-        {  0.20f,  0.20f, 0.0f,  0.90f, 0.30f, 0.35f },
-        { -0.20f,  0.20f, 0.0f,  0.95f, 0.95f, 0.95f },
-    };
-
-    // MODIFIER CET TABLEAU SELON L'ORDRE TESTÉ :
-    // - Test 1 : { 0, 1, 2,   0, 2, 3 }
-    // - Test 2 : { 0, 1, 2,   2, 3, 0 }
-    // - Test 3 : { 0, 2, 1,   0, 3, 2 }
-    const unsigned short kCarreIndex[6] = { 0, 2, 1,   0, 3, 2 };
-
-} // namespace
-
-int nkmain(const NkEntryState &state) {
-    (void)state;
-
-    NkInitialise();
-    NkChrono::BeginPreciseTiming();
-
-    NkWindowConfig cfg;
-    cfg.title = "Chapitre 08 - Exo 2 : L'ordre des index";
-    cfg.width = 1280;
-    cfg.height = 720;
-    cfg.centered = true;
-
-    NkWindow fenetre(cfg);
-    if (!fenetre.IsValid()) {
-        logger.Error("la fenetre ne s'est pas ouverte");
-        NkClose();
-        return 1;
+    std::vector<Segment> segs(S);
+    for (int i = 0; i < S; ++i) {
+        std::cin >> segs[i].c >> segs[i].debut >> segs[i].longueur >> segs[i].z;
     }
 
-    const NkSurfaceDesc surface = fenetre.GetSurfaceDesc();
-    logger.Infof("%s", monrhi::DecrireSurface(surface).CStr());
+    std::string colorBuf(W, '.');
+    std::vector<int> depthBuf(W, 100);
 
-    monrhi::Contexte contexte;
-    if (!contexte.Creer(surface)) {
-        logger.Error("contexte impossible : on s'arrete ici.");
-        NkClose();
-        return 1;
-    }
-    logger.Infof("contexte : %s", contexte.Decrire().CStr());
+    int vides = 0;
 
-    monrhi::Nuanceur nuanceur;
-    if (!nuanceur.Compiler(kSommets, kFragments)) {
-        logger.Errorf("NUANCEUR REFUSE :\n%s", nuanceur.Erreur().CStr());
-        contexte.Detruire();
-        NkClose();
-        return 1;
-    }
-
-    monrhi::Maillage carreIndexe;
-    carreIndexe.CreerIndexe(kCarreCoins, 4, kCarreIndex, 6);
-
-    // DÉCOMMENTER LA LIGNE CI-DESSOUS POUR LES ESSAIS AVEC TRI :
-    // glEnable(GL_CULL_FACE);
-
-    int numeroImage = 0;
-    bool tourne = true;
-    while (tourne && fenetre.IsOpen()) {
-        NkEvent *ev = nullptr;
-        while (NkEvents().PollEvent(ev)) {
-            if (ev->As<NkWindowCloseEvent>() != nullptr)
-                tourne = false;
-            if (ev->As<NkWindowSurfaceDestroyedEvent>() != nullptr || ev->As<NkWindowHiddenEvent>() != nullptr)
-                contexte.DetacherSurface();
-            if (ev->As<NkWindowSurfaceCreatedEvent>() != nullptr || ev->As<NkWindowShownEvent>() != nullptr)
-                contexte.RattacherSurface(fenetre.GetSurfaceDesc());
-        }
-        if (!tourne)
-            break;
-
-        if (!contexte.PeutDessiner()) {
-            NkChrono::Sleep((int64)16);
-            continue;
+    for (int img = 1; img <= F; ++img) {
+        std::string op;
+        std::cin >> op;
+        if (op == "REDIM") {
+            colorBuf = std::string(W, '.');
+            depthBuf = std::assign(W, 100); // Réinitialisation complète
+            std::cin >> op; // Lire l'opération d'effacement suivante
         }
 
-        const auto taille = fenetre.GetSize();
-        glViewport(0, 0, (GLsizei)taille.x, (GLsizei)taille.y);
-
-        glClearColor(kPetroleR, kPetroleV, kPetroleB, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        nuanceur.Activer();
-        carreIndexe.Dessiner();
-
-        numeroImage++;
-        if (numeroImage == 3) {
-            unsigned char px[4];
-            glReadPixels(640, 360, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, px);
-
-            // Adapter la chaîne selon l'ordre et le mode testés pour récupérer la ligne dans app.log
-            logger.Infof("ordre {0,1,2,  0,3,2}, sans tri : centre (%u, %u, %u)", px[0], px[1], px[2]);
+        if (op == "TOUT") {
+            colorBuf = std::string(W, '.');
+            std::fill(depthBuf.begin(), depthBuf.end(), 100);
+        } else if (op == "COULEUR") {
+            colorBuf = std::string(W, '.');
+        } else if (op == "PROFONDEUR") {
+            std::fill(depthBuf.begin(), depthBuf.end(), 100);
+        } else if (op == "RIEN") {
+            // Ne touche à rien
         }
 
-        contexte.Echanger();
-        NkChrono::YieldThread();
+        int passes = 0;
+        for (const auto& seg : segs) {
+            for (int i = 0; i < seg.longueur; ++i) {
+                int pos = seg.debut + i;
+                if (pos >= 0 && pos < W) {
+                    if (seg.z < depthBuf[pos]) {
+                        colorBuf[pos] = seg.c;
+                        depthBuf[pos] = seg.z;
+                        passes++;
+                    }
+                }
+            }
+        }
+
+        if (passes == 0) {
+            vides++;
+        }
+
+        std::cout << "IMAGE " << img << " " << colorBuf << " PASSES " << passes << "\n";
     }
 
-    carreIndexe.Detruire();
-    nuanceur.Detruire();
-    contexte.Detruire();
-    NkChrono::EndPreciseTiming();
-    NkClose();
+    std::cout << "VIDES " << vides << "\n";
+
     return 0;
 }

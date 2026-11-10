@@ -1,190 +1,94 @@
-#include "NKWindow/NKMain.h"
-#include "NKWindow/Core/NkWindow.h"
-#include "NKWindow/Core/NkWindowConfig.h"
-#include "NKWindow/Core/NkSurface.h"
-#include "NKEvent/NkEventSystem.h"
-#include "NKEvent/NkWindowEvent.h"
+#include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+#include <algorithm>
 
-#include "NKLogger/NkLog.h"
-#include "NKPlatform/NkEnv.h"
-#include "NKTime/NkChrono.h"
-#include "MonRhi/MonRhi.h"
-#include "MonRhi/Contexte.h"
-#include "MonRhi/Maillage.h"
-#include "MonRhi/Nuanceur.h"
-#include "MonRhi/Gl.h"
+struct Rect {
+    char c;
+    int x, y, l, h, z;
+};
 
-#include <cstdio>
-#include <cstdlib>
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
 
-using namespace nkentseu;
+    int W = 0, H = 0;
+    if (!(std::cin >> W >> H)) return 0;
 
-namespace {
+    int N = 0;
+    std::cin >> N;
 
-    const float kPetroleR = 0.05f;
-    const float kPetroleV = 0.25f;
-    const float kPetroleB = 0.28f;
+    std::vector<std::string> grid(H, std::string(W, '.'));
+    std::vector<std::vector<int>> depth(H, std::vector<int>(W, 100));
 
-    const char *kSommets = R"(
-layout(location = 0) in vec3 aPosition;
-layout(location = 1) in vec3 aCouleur;
+    bool testOn = false;
+    std::vector<Rect> rects;
+    std::vector<char> orderLetters;
+    std::map<char, bool> seenLetter;
 
-out vec3 vCouleur;
-
-void main() {
-    vCouleur = aCouleur;
-    gl_Position = vec4(aPosition, 1.0);
-}
-)";
-
-    const char *kFragments = R"(
-in vec3 vCouleur;
-
-out vec4 oCouleur;
-
-void main() {
-    oCouleur = vec4(vCouleur, 1.0);
-}
-)";
-
-    const monrhi::Sommet kCarreSansIndex[6] = {
-        { -0.20f, -0.20f, 0.0f,  0.96f, 0.62f, 0.14f },
-        {  0.20f, -0.20f, 0.0f,  0.20f, 0.75f, 0.70f },
-        {  0.20f,  0.20f, 0.0f,  0.90f, 0.30f, 0.35f },
-        { -0.20f, -0.20f, 0.0f,  0.96f, 0.62f, 0.14f },
-        {  0.20f,  0.20f, 0.0f,  0.90f, 0.30f, 0.35f },
-        { -0.20f,  0.20f, 0.0f,  0.95f, 0.95f, 0.95f },
-    };
-
-    const monrhi::Sommet kCarreCoins[4] = {
-        { -0.20f, -0.20f, 0.0f,  0.96f, 0.62f, 0.14f },
-        {  0.20f, -0.20f, 0.0f,  0.20f, 0.75f, 0.70f },
-        {  0.20f,  0.20f, 0.0f,  0.90f, 0.30f, 0.35f },
-        { -0.20f,  0.20f, 0.0f,  0.95f, 0.95f, 0.95f },
-    };
-    const unsigned short kCarreIndex[6] = { 0, 1, 2,   0, 2, 3 };
-
-    const monrhi::Sommet kMaisonSansIndex[9] = {
-        { -0.30f, -0.30f, 0.0f,  0.50f, 0.50f, 0.50f },
-        {  0.30f, -0.30f, 0.0f,  0.50f, 0.50f, 0.50f },
-        {  0.30f,  0.10f, 0.0f,  0.50f, 0.50f, 0.50f },
-        { -0.30f, -0.30f, 0.0f,  0.50f, 0.50f, 0.50f },
-        {  0.30f,  0.10f, 0.0f,  0.50f, 0.50f, 0.50f },
-        { -0.30f,  0.10f, 0.0f,  0.50f, 0.50f, 0.50f },
-        { -0.30f,  0.10f, 0.0f,  0.80f, 0.20f, 0.20f },
-        {  0.30f,  0.10f, 0.0f,  0.80f, 0.20f, 0.20f },
-        {  0.00f,  0.40f, 0.0f,  0.80f, 0.20f, 0.20f },
-    };
-
-    const monrhi::Sommet kMaisonCoins[5] = {
-        { -0.30f, -0.30f, 0.0f,  0.50f, 0.50f, 0.50f },
-        {  0.30f, -0.30f, 0.0f,  0.50f, 0.50f, 0.50f },
-        {  0.30f,  0.10f, 0.0f,  0.50f, 0.50f, 0.50f },
-        { -0.30f,  0.10f, 0.0f,  0.50f, 0.50f, 0.50f },
-        {  0.00f,  0.40f, 0.0f,  0.80f, 0.20f, 0.20f },
-    };
-    const unsigned short kMaisonIndex[9] = { 0, 1, 2,   0, 2, 3,   3, 2, 4 };
-
-} // namespace
-
-int nkmain(const NkEntryState &state) {
-    (void)state;
-
-    NkInitialise();
-    NkChrono::BeginPreciseTiming();
-
-    NkWindowConfig cfg;
-    cfg.title = "Chapitre 08 - Exo 1 : Le carre des deux facons";
-    cfg.width = 1280;
-    cfg.height = 720;
-    cfg.centered = true;
-
-    NkWindow fenetre(cfg);
-    if (!fenetre.IsValid()) {
-        logger.Error("la fenetre ne s'est pas ouverte");
-        NkClose();
-        return 1;
-    }
-
-    const NkSurfaceDesc surface = fenetre.GetSurfaceDesc();
-    logger.Infof("%s", monrhi::DecrireSurface(surface).CStr());
-
-    monrhi::Contexte contexte;
-    if (!contexte.Creer(surface)) {
-        logger.Error("contexte impossible : on s'arrete ici.");
-        NkClose();
-        return 1;
-    }
-    logger.Infof("contexte : %s", contexte.Decrire().CStr());
-
-    monrhi::Nuanceur nuanceur;
-    if (!nuanceur.Compiler(kSommets, kFragments)) {
-        logger.Errorf("NUANCEUR REFUSE :\n%s", nuanceur.Erreur().CStr());
-        contexte.Detruire();
-        NkClose();
-        return 1;
-    }
-
-    // --- Calculs et affichage des octets (Carré) ---
-    size_t octetsCarreSans = sizeof(kCarreSansIndex);
-    size_t octetsCarreAvec = sizeof(kCarreCoins) + sizeof(kCarreIndex);
-    size_t ecoCarre = octetsCarreSans - octetsCarreAvec;
-    float pctCarre = (float)ecoCarre * 100.0f / (float)octetsCarreSans;
-
-    logger.Infof("carre SANS index : 6 sommets, %zu octets", octetsCarreSans);
-    logger.Infof("carre AVEC index : 6 index sur 4 sommets, %zu octets", octetsCarreAvec);
-    logger.Infof("economie : %zu octets, soit %.1f %%", ecoCarre, pctCarre);
-
-    // --- Calculs et affichage des octets (Maison / Toit) ---
-    size_t octetsMaisonSans = sizeof(kMaisonSansIndex);
-    size_t octetsMaisonAvec = sizeof(kMaisonCoins) + sizeof(kMaisonIndex);
-    size_t ecoMaison = octetsMaisonSans - octetsMaisonAvec;
-    float pctMaison = (float)ecoMaison * 100.0f / (float)octetsMaisonSans;
-
-    logger.Infof("maison SANS index : 9 sommets, %zu octets", octetsMaisonSans);
-    logger.Infof("maison AVEC index : 9 index sur 5 sommets, %zu octets", octetsMaisonAvec);
-    logger.Infof("economie : %zu octets, soit %.2f %%", ecoMaison, pctMaison);
-
-    // Création du maillage indexé pour le carré
-    monrhi::Maillage carreIndexe;
-    carreIndexe.CreerIndexe(kCarreCoins, 4, kCarreIndex, 6);
-
-    bool tourne = true;
-    while (tourne && fenetre.IsOpen()) {
-        NkEvent *ev = nullptr;
-        while (NkEvents().PollEvent(ev)) {
-            if (ev->As<NkWindowCloseEvent>() != nullptr)
-                tourne = false;
-            if (ev->As<NkWindowSurfaceDestroyedEvent>() != nullptr || ev->As<NkWindowHiddenEvent>() != nullptr)
-                contexte.DetacherSurface();
-            if (ev->As<NkWindowSurfaceCreatedEvent>() != nullptr || ev->As<NkWindowShownEvent>() != nullptr)
-                contexte.RattacherSurface(fenetre.GetSurfaceDesc());
+    for (int i = 0; i < N; ++i) {
+        std::string cmd;
+        std::cin >> cmd;
+        if (cmd == "TEST") {
+            std::string state;
+            std::cin >> state;
+            testOn = (state == "ON");
+        } else if (cmd == "RECT") {
+            char c;
+            int x, y, l, h, z;
+            std::cin >> c >> x >> y >> l >> h >> z;
+            rects.push_back({c, x, y, l, h, z});
+            if (!seenLetter[c]) {
+                seenLetter[c] = true;
+                orderLetters.push_back(c);
+            }
         }
-        if (!tourne)
-            break;
-
-        if (!contexte.PeutDessiner()) {
-            NkChrono::Sleep((int64)16);
-            continue;
-        }
-
-        const auto taille = fenetre.GetSize();
-        glViewport(0, 0, (GLsizei)taille.x, (GLsizei)taille.y);
-
-        glClearColor(kPetroleR, kPetroleV, kPetroleB, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        nuanceur.Activer();
-        carreIndexe.Dessiner();
-
-        contexte.Echanger();
-        NkChrono::YieldThread();
     }
 
-    carreIndexe.Detruire();
-    nuanceur.Detruire();
-    contexte.Detruire();
-    NkChrono::EndPreciseTiming();
-    NkClose();
+    int rejetes = 0;
+    std::map<char, int> visibleCount;
+
+    for (const auto& r : rects) {
+        for (int ry = r.y; ry < r.y + r.h; ++ry) {
+            if (ry < 0 || ry >= H) continue;
+            for (int rx = r.x; rx < r.x + r.l; ++rx) {
+                if (rx < 0 || rx >= W) continue;
+
+                if (!testOn) {
+                    grid[ry][rx] = r.c;
+                    // Test éteint : la profondeur ne change pas
+                } else {
+                    if (r.z < depth[ry][rx]) {
+                        grid[ry][rx] = r.c;
+                        depth[ry][rx] = r.z;
+                    } else {
+                        rejetes++;
+                    }
+                }
+            }
+        }
+    }
+
+    // Compter les pixels visibles pour chaque lettre dans l'ordre d'apparition
+    for (int ry = 0; ry < H; ++ry) {
+        for (int rx = 0; rx < W; ++rx) {
+            char ch = grid[ry][rx];
+            if (ch != '.') {
+                visibleCount[ch]++;
+            }
+        }
+    }
+
+    for (int ry = 0; ry < H; ++ry) {
+        std::cout << grid[ry] << "\n";
+    }
+
+    for (char c : orderLetters) {
+        std::cout << c << " " << visibleCount[c] << "\n";
+    }
+
+    std::cout << "REJETES " << rejetes << "\n";
+
     return 0;
 }

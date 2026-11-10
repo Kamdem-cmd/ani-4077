@@ -1,87 +1,123 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <map>
+#include <algorithm>
 
-struct Fenetre {
-    std::string nom;
-    std::string couleur_affichee;
-    int effacements;
+struct Objet {
+    char c;
+    int x, y, l, h, z;
+    int indexLecture;
 };
 
-struct Contexte {
-    std::string nom;
-    size_t fenetre_idx;
-    std::string couleur_clear;
-};
+void simuler(const std::vector<Objet>& objets, int W, int H, long long& nuanceurOut, long long& rejetesOut) {
+    std::vector<std::vector<int>> depth(H, std::vector<int>(W, 100));
+    nuanceurOut = 0;
+    rejetesOut = 0;
+
+    for (const auto& obj : objets) {
+        if (obj.z == 100) {
+            // Un objet à z = 100 ne passe jamais LESS
+            for (int ry = obj.y; ry < obj.y + obj.h; ++ry) {
+                if (ry < 0 || ry >= H) continue;
+                for (int rx = obj.x; rx < obj.x + obj.l; ++rx) {
+                    if (rx < 0 || rx >= W) continue;
+                    rejetesOut++;
+                }
+            }
+            continue;
+        }
+
+        for (int ry = obj.y; ry < obj.y + obj.h; ++ry) {
+            if (ry < 0 || ry >= H) continue;
+            for (int rx = obj.x; rx < obj.x + obj.l; ++rx) {
+                if (rx < 0 || rx >= W) continue;
+
+                if (obj.z < depth[ry][rx]) {
+                    nuanceurOut++;
+                    depth[ry][rx] = obj.z;
+                } else {
+                    rejetesOut++;
+                }
+            }
+        }
+    }
+}
 
 int main() {
     std::ios_base::sync_with_stdio(false);
     std::cin.tie(NULL);
 
-    int n = 0;
-    if (!(std::cin >> n)) {
-        std::cout << "IGNORES 0\n";
+    int W = 0, H = 0, N = 0;
+    if (!(std::cin >> W >> H >> N)) return 0;
+
+    if (N == 0) {
+        std::cout << "AUCUN\n";
         return 0;
     }
 
-    std::vector<Fenetre> fenetres;
-    std::map<std::string, Contexte> contextes;
-    std::string courant = "AUCUN";
-    int ignores = 0;
+    std::vector<Objet> donne(N);
+    for (int i = 0; i < N; ++i) {
+        std::cin >> donne[i].c >> donne[i].x >> donne[i].y >> donne[i].l >> donne[i].h >> donne[i].z;
+        donne[i].indexLecture = i;
+    }
 
-    for (int i = 0; i < n; ++i) {
-        std::string cmd;
-        std::cin >> cmd;
+    // DONNE
+    long long nDonne = 0, rDonne = 0;
+    simuler(donne, W, H, nDonne, rDonne);
 
-        if (cmd == "CREER") {
-            std::string ctx_nom, fen_nom;
-            std::cin >> ctx_nom >> fen_nom;
+    // PROCHE_DABORD (z croissant, tri stable par index)
+    std::vector<Objet> proche = donne;
+    std::stable_sort(proche.begin(), proche.end(), [](const Objet& a, const Objet& b) {
+        return a.z < b.z;
+    });
+    long long nProche = 0, rProche = 0;
+    simuler(proche, W, H, nProche, rProche);
 
-            if (contextes.find(ctx_nom) != contextes.end()) {
-                ignores++;
-            } else {
-                fenetres.push_back({fen_nom, "noir", 0});
-                contextes[ctx_nom] = {ctx_nom, fenetres.size() - 1, "noir"};
-            }
-        } else if (cmd == "COURANT") {
-            std::string ctx_nom;
-            std::cin >> ctx_nom;
+    // LOIN_DABORD (z décroissant, tri stable par index)
+    std::vector<Objet> loin = donne;
+    std::stable_sort(loin.begin(), loin.end(), [](const Objet& a, const Objet& b) {
+        return a.z > b.z;
+    });
+    long long nLoin = 0, rLoin = 0;
+    simuler(loin, W, H, nLoin, rLoin);
 
-            if (ctx_nom == "AUCUN") {
-                courant = "AUCUN";
-            } else {
-                if (contextes.find(ctx_nom) == contextes.end()) {
-                    ignores++;
-                } else {
-                    courant = ctx_nom;
+    // Pixels couverts (ordre DONNE)
+    std::vector<std::vector<bool>> covered(H, std::vector<bool>(W, false));
+    long long couvertsCount = 0;
+    for (const auto& obj : donne) {
+        if (obj.z == 100) continue;
+        for (int ry = obj.y; ry < obj.y + obj.h; ++ry) {
+            if (ry < 0 || ry >= H) continue;
+            for (int rx = obj.x; rx < obj.x + obj.l; ++rx) {
+                if (rx < 0 || rx >= W) continue;
+                if (!covered[ry][rx]) {
+                    covered[ry][rx] = true;
+                    couvertsCount++;
                 }
-            }
-        } else if (cmd == "COULEUR") {
-            std::string coul;
-            std::cin >> coul;
-
-            if (courant == "AUCUN") {
-                ignores++;
-            } else {
-                contextes[courant].couleur_clear = coul;
-            }
-        } else if (cmd == "EFFACER") {
-            if (courant == "AUCUN") {
-                ignores++;
-            } else {
-                Contexte& ctx = contextes[courant];
-                Fenetre& fen = fenetres[ctx.fenetre_idx];
-                fen.couleur_affichee = ctx.couleur_clear;
-                fen.effacements++;
             }
         }
     }
 
-    for (const auto& fen : fenetres) {
-        std::cout << fen.nom << " " << fen.couleur_affichee << " " << fen.effacements << "\n";
+    // MEILLEUR
+    std::string meilleur = "DONNE";
+    long long minN = nDonne;
+    if (nProche < minN) {
+        minN = nProche;
+        meilleur = "PROCHE_DABORD";
     }
-    std::cout << "IGNORES " << ignores << "\n";
+    if (nLoin < minN) {
+        minN = nLoin;
+        meilleur = "LOIN_DABORD";
+    }
+
+    long long gaspilles = nDonne - couvertsCount;
+
+    std::cout << "DONNE NUANCEUR " << nDonne << " REJETES " << rDonne << "\n";
+    std::cout << "PROCHE_DABORD NUANCEUR " << nProche << " REJETES " << rProche << "\n";
+    std::cout << "LOIN_DABORD NUANCEUR " << nLoin << " REJETES " << rLoin << "\n";
+    std::cout << "COUVERTS " << couvertsCount << "\n";
+    std::cout << "MEILLEUR " << meilleur << "\n";
+    std::cout << "GASPILLES " << gaspilles << "\n";
 
     return 0;
 }

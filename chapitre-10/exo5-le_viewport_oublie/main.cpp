@@ -1,166 +1,107 @@
-#include "NKWindow/NKMain.h"
-#include "NKWindow/Core/NkWindow.h"
-#include "NKWindow/Core/NkWindowConfig.h"
-#include "NKWindow/Core/NkSurface.h"
-#include "NKEvent/NkEventSystem.h"
-#include "NKEvent/NkWindowEvent.h"
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
 
-#include "NKLogger/NkLog.h"
-#include "NKPlatform/NkEnv.h"
-#include "NKTime/NkChrono.h"
-#include "MonRhi/MonRhi.h"
-#include "MonRhi/Contexte.h"
-#include "MonRhi/Maillage.h"
-#include "MonRhi/Nuanceur.h"
-#include "MonRhi/Gl.h"
+struct CibleInfo {
+    int id;
+    long long w, h;
+};
 
-#include <cstdio>
-#include <cstdlib>
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
 
-using namespace nkentseu;
+    long long winW = 0, winH = 0;
+    if (!(std::cin >> winW >> winH)) return 0;
 
-namespace {
-    // Version 1 : uInutile déclaré mais jamais employé
-    const char *kSommetsV1 = R"(
-layout(location = 0) in vec3 aPosition;
-layout(location = 1) in vec3 aCouleur;
-uniform vec2 uDecalage;
-uniform vec3 uTeinte;
-uniform vec3 uInutile;
-out vec3 vCouleur;
-void main() {
-    vCouleur = aCouleur * uTeinte;
-    gl_Position = vec4(aPosition.xy + uDecalage, aPosition.z, 1.0);
-}
-)";
+    int N = 0;
+    std::cin >> N;
 
-    // Version 2 : uInutile employé avec un coefficient nul (0.0)
-    const char *kSommetsV2 = R"(
-layout(location = 0) in vec3 aPosition;
-layout(location = 1) in vec3 aCouleur;
-uniform vec2 uDecalage;
-uniform vec3 uTeinte;
-uniform vec3 uInutile;
-out vec3 vCouleur;
-void main() {
-    vCouleur = aCouleur * uTeinte + 0.0 * uInutile;
-    gl_Position = vec4(aPosition.xy + uDecalage, aPosition.z, 1.0);
-}
-)";
+    std::vector<CibleInfo> cibles;
+    cibles.push_back({0, winW, winH}); // Cible 0 = fenêtre
 
-    // Version 3 : uInutile employé avec un coefficient non nul (0.001)
-    const char *kSommetsV3 = R"(
-layout(location = 0) in vec3 aPosition;
-layout(location = 1) in vec3 aCouleur;
-uniform vec2 uDecalage;
-uniform vec3 uTeinte;
-uniform vec3 uInutile;
-out vec3 vCouleur;
-void main() {
-    vCouleur = aCouleur * uTeinte + 0.001 * uInutile;
-    gl_Position = vec4(aPosition.xy + uDecalage, aPosition.z, 1.0);
-}
-)";
+    int currentCible = 0;
+    long long vpX = 0, vpY = 0, vpL = winW, vpH = winH;
 
-    const char *kFragments = R"(
-in vec3 vCouleur;
-out vec4 oCouleur;
-void main() {
-    oCouleur = vec4(vCouleur, 1.0);
-}
-)";
+    int dessinCount = 0;
+    int malCadres = 0;
+    int pointCount = 0;
 
-    const monrhi::Sommet kCarreCoins[4] = {
-        { -0.20f, -0.20f, 0.0f,  0.96f, 0.62f, 0.14f },
-        {  0.20f, -0.20f, 0.0f,  0.20f, 0.75f, 0.70f },
-        {  0.20f,  0.20f, 0.0f,  0.90f, 0.30f, 0.35f },
-        { -0.20f,  0.20f, 0.0f,  0.95f, 0.95f, 0.95f },
-    };
-    const unsigned short kCarreIndex[6] = { 0, 1, 2,   0, 2, 3 };
-}
+    for (int i = 0; i < N; ++i) {
+        std::string cmd;
+        std::cin >> cmd;
+        if (cmd == "CIBLE") {
+            int id; long long l, h;
+            std::cin >> id >> l >> h;
+            cibles.push_back({id, l, h});
+        } else if (cmd == "LIER") {
+            std::cin >> currentCible;
+        } else if (cmd == "VIEWPORT") {
+            std::cin >> vpX >> vpY >> vpL >> vpH;
+        } else if (cmd == "DESSIN") {
+            dessinCount++;
+            long long L = 0, H = 0;
+            for (const auto& c : cibles) {
+                if (c.id == currentCible) {
+                    L = c.w; H = c.h;
+                    break;
+                }
+            }
 
-int nkmain(const NkEntryState &state) {
-    (void)state;
-    NkInitialise();
-    NkChrono::BeginPreciseTiming();
+            long long x0 = std::max(vpX, 0LL);
+            long long y0 = std::max(vpY, 0LL);
+            long long x1 = std::min(vpX + vpL, L);
+            long long y1 = std::min(vpY + vpH, H);
 
-    NkWindowConfig cfg;
-    cfg.title = "Chapitre 08 - Exo 5 : L'uniforme qui disparait";
-    cfg.width = 1280;
-    cfg.height = 720;
-    cfg.centered = true;
+            if (x0 >= x1 || y0 >= y1) {
+                std::cout << "DESSIN " << dessinCount << " CIBLE " << currentCible << " DEHORS\n";
+                malCadres++;
+            } else {
+                long long aire = (x1 - x0) * (y1 - y0);
+                long long scene = aire * 100 / (vpL * vpH);
+                long long couvre = aire * 100 / (L * H);
 
-    NkWindow fenetre(cfg);
-    if (!fenetre.IsValid()) {
-        logger.Error("la fenetre ne s'est pas ouverte");
-        NkClose();
-        return 1;
-    }
+                std::string verdict = "JUSTE";
+                if (vpX != 0 || vpY != 0 || vpL != L || vpH != H) {
+                    if (vpX >= 0 && vpY >= 0 && vpX + vpL <= L && vpY + vpH <= H) {
+                        verdict = "COIN";
+                    } else {
+                        verdict = "ROGNE";
+                    }
+                    malCadres++;
+                }
 
-    const NkSurfaceDesc surface = fenetre.GetSurfaceDesc();
-    monrhi::Contexte contexte;
-    if (!contexte.Creer(surface)) {
-        logger.Error("contexte impossible.");
-        NkClose();
-        return 1;
-    }
+                std::cout << "DESSIN " << dessinCount << " CIBLE " << currentCible 
+                          << " ZONE " << x0 << " " << y0 << " " << x1 << " " << y1 
+                          << " SCENE " << scene << " COUVRE " << couvre << " VERDICT " << verdict << "\n";
+            }
+        } else if (cmd == "POINT") {
+            pointCount++;
+            long long nx, ny;
+            std::cin >> nx >> ny;
 
-    // Fonction utilitaire pour tester et logger les emplacements de chaque version
-    auto testerVersion = [](const char* sourceSommets, const char* label) {
-        monrhi::Nuanceur nu;
-        if (nu.Compiler(sourceSommets, kFragments)) {
-            GLint locDecalage = glGetUniformLocation(nu.Id(), "uDecalage");
-            GLint locTeinte = glGetUniformLocation(nu.Id(), "uTeinte");
-            GLint locInutile = glGetUniformLocation(nu.Id(), "uInutile");
-            logger.Infof("%s : uDecalage %d, uTeinte %d, uInutile %d", label, locDecalage, locTeinte, locInutile);
-            nu.Detruire();
+            long long L = 0, H = 0;
+            for (const auto& c : cibles) {
+                if (c.id == currentCible) {
+                    L = c.w; H = c.h;
+                    break;
+                }
+            }
+
+            long long px = vpX + (nx + 100) * vpL / 200;
+            long long py = vpY + (ny + 100) * vpH / 200;
+
+            std::cout << "POINT " << pointCount << " " << px << " " << py;
+            if (px < 0 || px >= L || py < 0 || py >= H) {
+                std::cout << " HORS";
+            }
+            std::cout << "\n";
         }
-    };
-
-    testerVersion(kSommetsV1, "jamais employe");
-    testerVersion(kSommetsV2, "coefficient nul");
-    testerVersion(kSommetsV3, "coefficient 0.001");
-
-    // Lancement de la boucle de rendu avec la version finale
-    monrhi::Nuanceur nuanceur;
-    if (!nuanceur.Compiler(kSommetsV3, kFragments)) {
-        contexte.Detruire();
-        NkClose();
-        return 1;
     }
 
-    monrhi::Maillage carreIndexe;
-    carreIndexe.CreerIndexe(kCarreCoins, 4, kCarreIndex, 6);
+    std::cout << "DESSINS " << dessinCount << "\n";
+    std::cout << "MAL CADRES " << malCadres << "\n";
 
-    bool tourne = true;
-    while (tourne && fenetre.IsOpen()) {
-        NkEvent *ev = nullptr;
-        while (NkEvents().PollEvent(ev)) {
-            if (ev->As<NkWindowCloseEvent>() != nullptr) tourne = false;
-        }
-        if (!tourne) break;
-
-        if (!contexte.PeutDessiner()) {
-            NkChrono::Sleep((int64)16);
-            continue;
-        }
-
-        const auto taille = fenetre.GetSize();
-        glViewport(0, 0, (GLsizei)taille.x, (GLsizei)taille.y);
-
-        glClearColor(0.05f, 0.25f, 0.28f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        nuanceur.Activer();
-        carreIndexe.Dessiner();
-
-        contexte.Echanger();
-        NkChrono::YieldThread();
-    }
-
-    carreIndexe.Detruire();
-    nuanceur.Detruire();
-    contexte.Detruire();
-    NkClose();
     return 0;
 }
