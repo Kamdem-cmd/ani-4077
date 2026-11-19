@@ -1,0 +1,8 @@
+Ou je garde les noms :
+Je garde les noms dans une table associative à part indexée par le couple complet (index, génération). Ni la réserve seule ni la case courante ne suffisent, car comme le montre la ligne VOIR 0 1 PERIMEE herbe CASE visage du scénario A (ou VOIR 1 1 PERIMEE b CASE d du scénario B), la case 0 est désormais occupée par visage (génération 2) alors que l'on doit encore pouvoir diagnostiquer l'ancienne poignée (0, 1) qui désignait herbe.
+
+Pourquoi pas dans la ressource :
+Une ressource détruite n'existe plus en mémoire : son emplacement dans la réserve est soit libéré (CASE VIDE), soit immédiatement réécrit par une nouvelle ressource lors du recyclage de la case. Stocker le nom uniquement dans l'objet ressource vivant rendrait impossible son affichage au moment où une poignée périmée est présentée après la destruction.
+
+Ce que coute ma table :
+Chaque entrée de la table stocke une clé de 16 octets (deux entiers de 64 bits) et une chaîne de caractères (environ 32 octets pour std::string plus l'allocation éventuelle), soit environ 48 à 64 octets par ressource créée, ce qui représente quelques dizaines de kilo-octets seulement pour un millier de ressources. Pour éviter qu'elle ne croisse indéfiniment sur de longues sessions, il suffit de la borner en taille via un tampon circulaire (anneau FIFO des K dernières destructions) ou de ne l'activer qu'en mode débogage.

@@ -27,32 +27,32 @@ with workspace("chapitre-12"):
     #     files(["src/**.cpp"])
 
     # Project: (fichier .jenga separe, inclus)
-    with include("exo1-inverser_l_ordre/projet.jenga"):
+    with include("exo1-le_compte_des_perimees/projet.jenga"):
         pass
 
-    with include("exo2-tuer_une_image_sur_deux/projet.jenga"):
+    with include("exo2-la_marque_a_l_epreuve/projet.jenga"):
         pass
 
-    with include("exo3-la_fonction_de_comparaison/projet.jenga"):
+    with include("exo3-sans_generation/projet.jenga"):
         pass
 
-    with include("exo4-casser_une_cible_expres/projet.jenga"):
+    with include("exo4-la_generation_qui_boucle/projet.jenga"):
         pass
 
-    with include("exo5-le_viewport_oublie/projet.jenga"):
+    with include("exo5-compter_les_cases/projet.jenga"):
         pass
 
-    with include("exo6-le_combat_de_profondeur_provoque/projet.jenga"):
+    with include("exo6-la_commande_qui_tient_l_interdiction/projet.jenga"):
         pass
 
-    with include("exo7-l_ordre_compte_encore_pour_la_vitesse/projet.jenga"):
+    with include("exo7-la_fuite_detectee/projet.jenga"):
         pass
 
-    with include("exo8-deux_cibles_enchainees/projet.jenga"):
+    with include("exo8-la_destruction_differee/projet.jenga"):
         pass
 
-    with include("exo9-la_profondeur_ecrite_sans_couleur/projet.jenga"):
+    with include("exo9-le_nom_qui_sert_a_quelque_chose/projet.jenga"):
         pass
 
-    with include("exo10-une_cible_plus_grande_que_la_fenetre/projet.jenga"):
+    with include("exo10-le_rhi_muet/projet.jenga"):
         pass

@@ -1,0 +1,8 @@
+Mon choix :
+La poignée doit mourir dès l'appel au retrait (stratégie du monde A), tout en conservant la ressource physique GPU dans la file de destruction différée pendant D images. Sur le plan logique, le code applicatif a demandé la destruction de l'objet et ne doit plus jamais le réutiliser après ce point ; invalider immédiatement la poignée côté CPU garantit le déterminisme de la durée de vie logique tout en laissant au matériel le temps d'achever les commandes déjà soumises.
+
+Ce que l'autre choix ne voit pas :
+Dans le monde B (invalidation tardive à la destruction réelle), tout accès survenant pendant le délai de grâce réussit silencieusement au lieu de signaler une erreur d'utilisation après libération : dans le scénario A, le monde B laisse passer 2 accès invalides sur herbe (DETECTEES A 2 B 0) et dans le scénario B il masque l'accès à pierre (DETECTEES A 1 B 0). De plus, comme la case du monde B reste bloquée jusqu'à l'échéance, le recyclage d'emplacements est paralysé et oblige à allouer le double de cases dans le scénario B (CASES A 2 B 4).
+
+Pourquoi OpenGL s'en passe :
+Dans le modèle classique d'OpenGL, le pilote graphique gère lui-même un comptage de références interne sur chaque objet (texture, tampon, programme) : lorsqu'une application appelle glDeleteTextures pendant qu'un appel de dessin antérieur utilise encore cette texture dans la file de commandes du pilote, OpenGL détache immédiatement le nom de l'objet côté application mais retarde la libération réelle de la mémoire vidéo jusqu'à ce que le GPU ait fini d'exécuter l'image en cours.
