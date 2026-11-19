@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# =============================================================================
+#  Etape 05 - chapitre 6 : le premier triangle.
+#
+#  Ce fichier n'a PAS CHANGE d'un iota depuis l'etape 04, alors que deux
+#  fichiers source se sont ajoutes. C'est mon3d_bibliotheque() qui ramasse
+#  src/MonRhi/**.cpp : ajouter un fichier ne demande aucune declaration.
+#  Le contraire, dans un CMakeLists ecrit a la main, se paie en oublis.
+#
+#  Regardez la taille de ce fichier, puis celle de ../config/mon3d.jenga.
+#  Toute la difficulte est la-bas, ecrite UNE FOIS ; ici il ne reste que ce
+#  qui est propre a cette etape : deux projets et leurs noms.
+#
+#  C'est la methodologie du livre, et elle ne changera plus jusqu'au
+#  chapitre 23.
+# =============================================================================
+from Jenga import *
+
+# useconfig charge la methodologie et propage ses symboles a ce fichier.
+# C'est le mecanisme qu'emploie Nkentseu.jenga pour ses cent un modules.
+useconfig("../config/mon3d.jenga")
+
+with workspace("MonRhiWks", location="."):
+    configurations(["Debug", "Release"])
+
+    with project("MonRhi"):
+        mon3d_bibliotheque()
+
+    with project("Essai"):
+        mon3d_application("Essai")

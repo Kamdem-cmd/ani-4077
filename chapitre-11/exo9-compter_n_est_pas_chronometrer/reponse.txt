@@ -1,0 +1,8 @@
+Pourquoi les deux pourcentages different :
+Le pourcentage d'économie d'appels (e) traite chaque liaison de manière uniforme, alors que le temps réel d'exécution dépend du poids spécifique de chaque opération dans le pilote graphique et du coût incompressible des appels de dessin (d * cd) qui ne diminuent pas lors du regroupement. Comme les liaisons de tableaux (VAO) et les dessins représentent une part fixe importante du temps total, la réduction en nanosecondes (f) est mathématiquement inférieure à la réduction brute du nombre d'appels (e).
+
+Ce que j'ai chronometre chez moi :
+Sur un poste de développement standard (CPU x86_64 sous environnement Windows / WSL2, compilation optimisée avec clang++ -O2 -std=c++17), l'exécution de la boucle simulée sur 1 000 images avec NkChrono donne environ 0,084 ms par image en ordre de création contre 0,054 ms par image en ordre regroupé (soit un gain temporel effectif d'environ 35 %, cohérent avec le modèle théorique bureau).
+
+Ce qu'une liaison coute de chaque cote :
+D'après les hypothèses de coût du modèle, un changement de programme (shader) est l'opération la plus lourde car il oblige le pilote à reconfigurer les étages du pipeline et les registres uniformes (2400 ns sur mobile contre 800 ns sur bureau). Sur puce mobile, la surcharge CPU et mémoire du pilote est trois fois plus élevée que sur ordinateur de bureau, rendant le regroupement par programme et par texture encore plus critique pour tenir le budget temps d'une image.

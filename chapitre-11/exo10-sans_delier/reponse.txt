@@ -1,0 +1,8 @@
+Pourquoi l'image ne change pas :
+Dans une scène fermée où seul le moteur de rendu manipule les tableaux de sommets (VAO) pour dessiner des maillages déjà configurés, supprimer l'appel glBindVertexArray(0) après chaque dessin ne modifie pas l'image finale car l'appel glBindVertexArray(suivant) écrase immédiatement la liaison précédente avant tout ordre de tracé.
+
+Ce que le deliage protege :
+Dans la machine à états d'OpenGL, la liaison du tampon d'index (GL_ELEMENT_ARRAY_BUFFER) est encapsulée à l'intérieur du VAO actuellement lié. Délier le VAO en fin de dessin (glBindVertexArray(0)) protège son état interne contre toute modification accidentelle par du code tiers, au prix d'un appel supplémentaire à glBindVertexArray par objet dessiné (10 appels dans le scénario A contre 7 dans le scénario B).
+
+Le cas ou son absence casse :
+Lorsqu'on ne délie pas le VAO après un dessin (scénario B), le VAO 1 reste actif dans le contexte global. Si une fonction utilitaire ou un module de chargement téléverse ensuite un nouveau tampon d'index (TELEVERSE 13) pour initialiser une autre géométrie sans lier son propre VAO, OpenGL modifie silencieusement l'EBO attaché au VAO 1 ; le dessin suivant utilisant le VAO 1 lit alors de mauvais indices et produit une géométrie corrompue ou un plantage mémoire.

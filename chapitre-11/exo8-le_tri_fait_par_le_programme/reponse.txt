@@ -1,0 +1,8 @@
+Ce que le tri remplace :
+Le tri remplace l'imbrication rigide de structures associatives ou de boucles multiples (parcourant les programmes un par un, puis les textures associées à chaque programme). En triant linéairement un unique tableau d'objets selon une clé composite avant le rendu, on obtient exactement le même regroupement et le même nombre total d'appels de liaison tout en simplifiant la boucle de rendu en un seul passage séquentiel.
+
+Ce que la version triee permet :
+Contrairement aux boucles imbriquées dont la hiérarchie est figée dans le code source, la version triée permet de modifier dynamiquement l'ordre des critères de regroupement (par exemple trier par maillage, par matériau ou par profondeur) simplement en changeant le comparateur de tri, sans réécrire l'architecture du moteur.
+
+Quand la troisieme cle coute :
+Dans le scénario C (sans déliage, clé PTM), trier également par maillage à l'intérieur de chaque paire (programme, texture) fait perdre une liaison utile (8 liaisons utiles en version imbriquée contre 9 en version triée, soit un gain de -1). En effet, l'ordre imbriqué terminait le groupe (1, 1) par le maillage 2 (sol) et commençait le groupe (1, 2) par le même maillage 2 (arbre), évitant ainsi une liaison de tableau à la frontière ; le tri sur M a réordonné les éléments et cassé cette continuité gratuite entre deux groupes adjacents.

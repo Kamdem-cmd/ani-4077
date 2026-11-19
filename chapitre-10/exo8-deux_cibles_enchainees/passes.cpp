@@ -93,4 +93,4 @@ int main() {
     resoudreScenario("C");
 
     return 0;
-}
+}    
