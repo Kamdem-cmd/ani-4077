@@ -1,25 +1,8 @@
-BANC poignee nulle refusee OK
-BANC double destruction sans effet OK
-BANC case reemployee OK
-BANC generation avancee OK
-BANC perimee invalide apres recyclage OK
-BANC types separes OK
-BANC 6 SUR 6
-SCENARIO A
-PREMIERE 19 2
-DERNIERE 0 2
-ANCIENNES VALIDES 0
-VIVANTES 20
-CASES 20
-SCENARIO B
-PREMIERE 19 2
-DERNIERE 20 1
-ANCIENNES VALIDES 0
-VIVANTES 21
-CASES 21
-SCENARIO C
-PREMIERE AUCUNE
-DERNIERE AUCUNE
-ANCIENNES VALIDES 0
-VIVANTES 0
-CASES 3
+Ce que le RHI muet permet de tester :
+Le RHI muet permet d'exécuter de manière déterministe et ultra-rapide toute la logique de gestion des ressources d'un moteur ou d'un jeu sur un serveur d'intégration continue sans carte graphique ni contexte fenêtré. Par exemple, dans un jeu de stratégie ou un RPG, on peut simuler le chargement et le déchargement de niveaux entiers pour vérifier que les entités ne conservent pas de poignées périmées sur des textures détruites, qu'il n'y a aucune fuite de ressources à la fermeture d'une scène et que le recyclage des cases fonctionne sous forte charge.
+
+Ce qu'il ne peut pas tester :
+Il ne peut tester ni le rendu visuel final à l'écran ni la validité matérielle des commandes soumises au GPU (compilation réelle des nuanceurs GLSL/HLSL, formats de pixels supportés par le matériel, erreurs de synchronisation mémoire ou performances réelles de rastérisation). Seul un test exécuté sur un véritable backend graphique (OpenGL ou Vulkan) avec lecture du tampon d'image ou requête de validation du pilote peut prouver que les pixels dessinés et les états du pipeline sont conformes.
+
+Ce que j'ai du changer dans l'interface :
+Il n'a fallu rien changer dans la structure de l'interface IRhi dès lors qu'elle repose uniquement sur des types propres au moteur (des poignées génériques typées Poignee<Marque> composées d'entiers standards) et qu'elle n'expose aucun type, en-tête ou constante spécifique à OpenGL (comme GLuint ou GLenum). Cette étanchéité complète garantit que la seconde implémentation RhiMuet compile et s'exécute sans aucune dépendance envers une bibliothèque graphique.
